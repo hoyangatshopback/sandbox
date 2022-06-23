@@ -1,5 +1,7 @@
-// import * as React from 'react';
-import * as ReactDOMServer from 'react-dom/server';
+import React from 'react';
+import { render } from 'react-dom';
+import { renderToString } from 'react-dom/server';
+// import { ServerStyleSheet } from 'styled-components';
 
 function loadScript(data, type, callback) {
   const el = document.createElement('script');
@@ -11,10 +13,12 @@ function loadScript(data, type, callback) {
     // el.type = 'module';
   }
   document.documentElement.appendChild(el);
-  if (callback && typeof callback === 'function') {
-    callback();
-  } else {
-    return Promise.resolve();
+  el.onload = () => {
+    if (callback && typeof callback === 'function') {
+      callback();
+    } else {
+      return Promise.resolve();
+    }
   }
 }
 
@@ -32,8 +36,15 @@ window.addEventListener('message', async (event) => {
     const { moduleName = '', props = {} } = event.data;
 
     if (moduleName && window[moduleName]) {
-      const module = window[moduleName];
-      const r = ReactDOMServer.renderToString(module(props));
+      const Element = window[moduleName];
+
+      // const sheet = new ServerStyleSheet();
+      // const r = renderToString(sheet.collectStyles(<Element {...props} />));
+
+      const r = renderToString(<Element {...props} />);
+
+      // const styleTags = sheet.getStyleTags(); // or sheet.getStyleElement();
+      // sheet.seal();
 
       event.source.postMessage({ source: 'sandbox', [`${moduleName}`]: r, props }, event.origin);
     }

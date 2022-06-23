@@ -4,10 +4,14 @@ const TerserPlugin = require("terser-webpack-plugin")
 const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
 
 module.exports = (env, argv) => {
+  // const whoami = argv.whoami || '';
+  // const whaleExtPath = argv.path || '';
+
   return {
     entry: "./src/index.js",
     output: {
       path: path.join(__dirname, '/dist'),
+      // path: path.join('/Users', whoami, whaleExtPath, 'src/sandbox'),
       filename: '[name].js',
       publicPath: '.',
     },
